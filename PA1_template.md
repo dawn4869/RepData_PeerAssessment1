@@ -31,6 +31,7 @@ hist(data.dcast.sum$steps,main="Steps per Day",xlab="Steps")
 ```
 
 ![plot of chunk plot parametres](figure/plot parametres.png) 
+## Print the report
 
 ```r
 steps.mean<-mean(data.dcast.sum$steps)
@@ -74,6 +75,9 @@ No.NA<-NA.cal[1]
 ```
 There are 2304 missing values in the dataset
 ### Fill in NA values
+Fill the NA values with the average value for each 5 min interval
+The strategy is to find all the NA values and then replace with the corresponding average steps for each 5 min interval
+Because we have calculated the average for each 5-min interval before we can simply get it from the previous calculation which is called data.dcast.2
 
 ```r
 data.fill<-data
@@ -100,6 +104,16 @@ hist(data.fill.dcast.sum$steps,main="Steps per Day (NA filled with mean for each
 steps.mean.2<-mean(data.fill.dcast.sum$steps)
 steps.median.2<-median(data.fill.dcast.sum$steps)
 report.NAfilled<-cbind(steps.mean.2,steps.median.2)
+print(report.NAfilled)
+```
+
+```
+##      steps.mean.2 steps.median.2
+## [1,]        10766          10766
+```
+## Print a summary to compare two reports
+
+```r
 report.combined<-rbind(report,report.NAfilled)
 row.names(report.combined)<-c("Original","NA filled with mean for the 5-minute interval")
 print(report.combined)
@@ -112,6 +126,9 @@ print(report.combined)
 ```
 NA values have a small effect in median but not mean calculation
 # Are there differences in activity patterns between weekdays and weekends?
+##The strategy is firstly determine which day is it for every record by the function weekdays()
+Then, determine whether it is "Weekday" or "Weekend"
+
 
 ```r
 for (i in 1:length(data.fill$date)){
@@ -128,7 +145,10 @@ for(i in 1:length(data.fill$date)){
                 data.fill$WeekdayorWeekend[i]<-c("Weekday")
         }
 }
+```
+## Plot a comparison of the data collected in Weekday and Weekend
 
+```r
 data.split.day<-split(data.fill,data.fill$WeekdayorWeekend)
 input<-data.frame()
 mean.interval<-function(input){
@@ -144,4 +164,4 @@ with(output.day,{
 })
 ```
 
-![plot of chunk plot Average Daily Activity(Weekday vs Weekdend)](figure/plot Average Daily Activity(Weekday vs Weekdend).png) 
+![plot of chunk plot comparison(Weekday&Weekend)](figure/plot comparison(Weekday&Weekend).png) 

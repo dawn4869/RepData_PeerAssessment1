@@ -24,6 +24,9 @@ data.dcast.sum<-dcast(data.melt,date~variable,sum)
 Plot the sum steps per day
 ```{r plot parametres}
 hist(data.dcast.sum$steps,main="Steps per Day",xlab="Steps")
+```
+## Print the report
+```{r print report}
 steps.mean<-mean(data.dcast.sum$steps)
 steps.median<-median(data.dcast.sum$steps)
 report<-cbind(steps.mean,steps.median)
@@ -51,6 +54,9 @@ No.NA<-NA.cal[1]
 ```
 There are `r No.NA` missing values in the dataset
 ### Fill in NA values
+Fill the NA values with the average value for each 5 min interval
+The strategy is to find all the NA values and then replace with the corresponding average steps for each 5 min interval
+Because we have calculated the average for each 5-min interval before we can simply get it from the previous calculation which is called data.dcast.2
 ```{r}
 data.fill<-data
 for (i in 1:length(data$steps)){
@@ -70,13 +76,20 @@ hist(data.fill.dcast.sum$steps,main="Steps per Day (NA filled with mean for each
 steps.mean.2<-mean(data.fill.dcast.sum$steps)
 steps.median.2<-median(data.fill.dcast.sum$steps)
 report.NAfilled<-cbind(steps.mean.2,steps.median.2)
+print(report.NAfilled)
+```
+## Print a summary to compare two reports
+```{r summary of two reports}
 report.combined<-rbind(report,report.NAfilled)
 row.names(report.combined)<-c("Original","NA filled with mean for the 5-minute interval")
 print(report.combined)
 ```
 NA values have a small effect in median but not mean calculation
 # Are there differences in activity patterns between weekdays and weekends?
-```{r plot Average Daily Activity(Weekday vs Weekdend)}
+##The strategy is firstly determine which day is it for every record by the function weekdays()
+Then, determine whether it is "Weekday" or "Weekend"
+
+```{r add information on Weekday}
 for (i in 1:length(data.fill$date)){
         date.id<-as.Date(data.fill$date[i])
         weekday.id<-weekdays(date.id)
@@ -91,7 +104,9 @@ for(i in 1:length(data.fill$date)){
                 data.fill$WeekdayorWeekend[i]<-c("Weekday")
         }
 }
-
+```
+## Plot a comparison of the data collected in Weekday and Weekend
+```{r plot comparison(Weekday&Weekend)}
 data.split.day<-split(data.fill,data.fill$WeekdayorWeekend)
 input<-data.frame()
 mean.interval<-function(input){
